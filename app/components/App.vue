@@ -15,7 +15,7 @@
           <v-template if="'bg' in event">
             <!-- bg image @ beginning of list -->
             <FlexboxLayout flexDirection="column" class="bgWrapper">
-              <ImageCacheIt :src="event.bg" stretch="none" height="250"/>
+              <ImageCacheIt :src="event.bg" stretch="aspectFill" height="250"/>
             </FlexboxLayout>
           </v-template>
 
