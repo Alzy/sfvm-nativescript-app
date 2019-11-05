@@ -14,8 +14,8 @@
         <ListView for="event in events" minHeight="1920" flexGrow="1" class="eventsList">
           <v-template if="'bg' in event">
             <!-- bg image @ beginning of list -->
-            <FlexboxLayout flexDirection="row" class="bgWrapper" height="500">
-              <ImageCacheIt :src="'https://sfvm.la/static/images/bg/bg'+Math.ceil(Math.random()*14)+'.jpg'" loadMode="sync" stretch="aspectFill"/>
+            <FlexboxLayout flexDirection="column" class="bgWrapper">
+              <ImageCacheIt :src="event.bg" stretch="none" height="250"/>
             </FlexboxLayout>
           </v-template>
 
@@ -30,7 +30,7 @@
             <!-- event listing -->
             <FlexboxLayout flexDirection="row" width="100%">
               <FlexboxLayout flexDirection="column" class="eventImageWrapper" width="30%" @tap="eventTap(event)">
-                <ImageCacheIt :src="'https://sfvm.la'+event.image" loadMode="sync" class="eventImage"/>
+                <ImageCacheIt :src="'https://sfvm.la'+event.image" class="eventImage" stretch="aspectFit" height="100%"/>
               </FlexboxLayout>
               <FlexboxLayout flexDirection="column" class="eventDetails" width="70%" @tap="eventTap(event)">
                 <Label :text="event.name" fontSize="22" textWrap="true"/>
@@ -98,7 +98,8 @@
             })
           }
         }
-        res.splice(0, 0, {'bg': 'null'})
+        res.splice(0, 0, {'bg': 'https://sfvm.la/static/images/bg/bg'+Math.ceil(Math.random()*14)+'.jpg'})
+        console.log('events list reloaded')
         this.events = res
       })
     },

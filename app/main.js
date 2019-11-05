@@ -3,7 +3,7 @@ import App from './components/App'
 
 import ImageCacheIt from 'nativescript-image-cache-it/vue'
 
-// Vue.use(ImageCacheIt)
+Vue.use(ImageCacheIt)
 
 import store from './store'
 
