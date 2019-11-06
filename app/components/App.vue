@@ -15,28 +15,27 @@
           <v-template if="'bg' in event">
             <!-- bg image @ beginning of list -->
             <FlexboxLayout flexDirection="column" class="bgWrapper">
-              <ImageCacheIt :src="event.bg" stretch="aspectFill" height="250"/>
+              <ImageCacheIt :src="event.bg" stretch="aspectFill" height="300"/>
             </FlexboxLayout>
           </v-template>
 
           <v-template if="'date' in event">
             <!-- date label -->
             <FlexboxLayout flexDirection="row" class="dateWrapper">
-              <Label :text="'>> ' + event.date" fontSize="24" textWrap="true" class="date"/>
+              <Label :text="'>> ' + event.date" fontSize="24" textWrap="true" :class="$index == 1 ? 'firstDate' : 'date'"/>
             </FlexboxLayout>
           </v-template>
 
           <v-template>
             <!-- event listing -->
             <FlexboxLayout flexDirection="row" width="100%">
-              <FlexboxLayout flexDirection="column" class="eventImageWrapper" width="30%" @tap="eventTap(event)">
-                <ImageCacheIt :src="'https://sfvm.la'+event.image" class="eventImage" stretch="aspectFit" height="100%"/>
+              <FlexboxLayout flexDirection="row" class="eventImageWrapper" width="30%" @tap="eventTap(event)">
+                <ImageCacheIt :src="'https://sfvm.la'+event.image" class="eventImage" stretch="aspectFit" width="100%" height="100%"/>
               </FlexboxLayout>
               <FlexboxLayout flexDirection="column" class="eventDetails" width="70%" @tap="eventTap(event)">
                 <Label :text="event.name" fontSize="22" textWrap="true"/>
                 <Label :text="(event.price == '0.00' ? 'FREE' : '$'+event.price)" />
                 <Label :text="event.city" />
-                <!-- <Label :text="event.short_description" flexGrow="1" textWrap="true"/> -->
               </FlexboxLayout>
             </FlexboxLayout>
           </v-template>
@@ -50,6 +49,7 @@
   const axios = require('axios')
   const platformModule = require("tns-core-modules/platform");
   const utilsModule = require("tns-core-modules/utils/utils");
+  const moment = require('moment');
 
   import EventPage from './EventPage'
 
@@ -64,14 +64,13 @@
       const today = new Date()
       let currDateCheck = today
       let skipTmrwYestCheck = false
-      let weekday = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
 
       axios.get('https://sfvm.la/api/v1/events').then(response => {
         let res = response.data
         for (let index = 0; index < res.length; index++){
           let item = res[index]
           let dt = new Date(item.start_date)
-          let dateStr = weekday[dt.getDay()] + '  (' + (dt.getMonth()+1) + ' / ' + dt.getDate() + ')'
+          let dateStr = moment(dt).format('MMM. Do')
 
           // if start of todays events list
           if (index == 0 && (dt.getMonth() == today.getMonth()) && (dt.getDate() == today.getDate())) {
@@ -127,17 +126,15 @@ ActionBar {
 }
 
 .dateWrapper {
-  padding: 75px 25px 50px 25px;
-}
-.dateWrapper:first-child {
-  padding: 50px 25px;
+  padding: 50px 25px 50px 25px;
 }
 .date {
+  margin-top: 150px;
 }
 
 
 .eventImage {
-  margin-top: 25px;
+  /*margin-top: 25px;*/
 }
 .eventDetails {
   margin: 0 22px 22px 32px;
