@@ -26,6 +26,7 @@
               <Label :text="$props.event.start_date | eventEnds" textWrap="true"/>
           </FlexboxLayout>
 
+          <!-- ACTIONS -->
           <FlexboxLayout color="white">
             <Button :text="remindText" flexGrow="1" @tap="scheduleReminder($props.event)"/>
             <Button text="More Info" v-if="$props.event.more_details_link" flexGrow="1" @tap="openUrl($props.event.more_details_link)"/>
@@ -71,11 +72,12 @@
         hourBeforeEventStart = hourBeforeEventStart.setDate(hourBeforeEventStart.getDate()-1)
 
         LocalNotifications.schedule([{
-          title: ''+event.name+' is coming up!',
-          body: 'Click here to get more info and directions.',
+          title: ''+event.name+' is starting soon!',
+          body: 'Tap here to get info and directions.',
           image: 'https://sfvm.la'+event.image,
           thumbnail: true,
           channel: 'SFVM Channel', // default: 'Channel'
+          slug: event.slug,
           at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
         }]).then((scheduledID) => {
           this.remindText = 'Reminder Set'
@@ -83,6 +85,11 @@
           this.reminderId = scheduledID
         }, (error) => {
           // COULDNT SET NOTIFICATION
+        })
+
+        let thisEvent = JSON.stringify(this.event)
+        LocalNotifications.addOnMessageReceivedCallback((notification) => {
+          console.log(notification)
         })
       },
 

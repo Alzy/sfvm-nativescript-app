@@ -28,9 +28,9 @@
 
           <v-template>
             <!-- event listing -->
-            <FlexboxLayout flexDirection="row" width="100%">
-              <FlexboxLayout flexDirection="row" class="eventImageWrapper" width="30%" @tap="eventTap(event)">
-                <ImageCacheIt :src="'https://sfvm.la'+event.image" class="eventImage" stretch="aspectFit" width="100%" height="100%"/>
+            <FlexboxLayout flexDirection="row" width="100%" marginBottom="50px" class="eventListing">
+              <FlexboxLayout flexDirection="column" class="eventImageWrapper" width="30%" @tap="eventTap(event)">
+                <ImageCacheIt :src="'https://sfvm.la'+event.image" class="eventImage" stretch="aspectFit" width="100%"/>
               </FlexboxLayout>
               <FlexboxLayout flexDirection="column" class="eventDetails" width="70%" @tap="eventTap(event)">
                 <Label :text="event.name" fontSize="22" textWrap="true"/>
@@ -132,11 +132,10 @@ ActionBar {
   margin-top: 150px;
 }
 
-
-.eventImage {
-  /*margin-top: 25px;*/
+.eventImageWrapper {
+  margin-bottom: 75px;
 }
 .eventDetails {
-  margin: 0 22px 22px 32px;
+  margin: 0px 22px 22px 32px;
 }
 </style>
