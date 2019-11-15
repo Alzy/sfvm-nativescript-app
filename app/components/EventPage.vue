@@ -9,7 +9,7 @@
       <ScrollView>
         <StackLayout>
           <FlexboxLayout flexDirection="row">
-              <Image :src="'https://sfvm.la'+$props.event.image" loadMode="sync" stretch="aspectFill"/>`
+              <Image :src="'https://sfvm.la'+$props.event.image" loadMode="sync" stretch="aspectFill"/>
           </FlexboxLayout>
           <FlexboxLayout flexDirection="row">
               <Label :text="$props.event.name" fontSize="24" textWrap="true" class="eventName" />
@@ -22,7 +22,14 @@
           </FlexboxLayout>
 
           <FlexboxLayout flexDirection="column" class="eventShortDescription">
-              <Label :text="$props.event.short_description" textWrap="true"/>
+              <Label :text="$props.event.short_description + '\n'" textWrap="true"/>
+              <Label :text="$props.event.start_date | eventEnds" textWrap="true"/>
+          </FlexboxLayout>
+
+          <FlexboxLayout color="white">
+            <Button :text="remindText" flexGrow="1" @tap="scheduleReminder($props.event)"/>
+            <Button text="More Info" v-if="$props.event.more_details_link" flexGrow="1" @tap="openUrl($props.event.more_details_link)"/>
+            <Button text="Directions" flexGrow="1" @tap="getDirections(($props.event.address + ', ' + $props.event.city))"/>
           </FlexboxLayout>
         </StackLayout>
       </ScrollView>
@@ -31,10 +38,13 @@
 </template>
 
 <script >
-  var moment = require('moment');
+  import { LocalNotifications } from "nativescript-local-notifications";
+
+  const moment = require('moment');
   // require the plugin
-  var Directions = require("nativescript-directions").Directions;
-  var directions = new Directions();
+  const Directions = require("nativescript-directions").Directions;
+  const directions = new Directions();
+  const utilsModule = require("tns-core-modules/utils/utils");
 
 
   export default {
@@ -42,6 +52,9 @@
 
     data() {
       return {
+        remindText: 'Remind Me',
+        remindMe: false,
+        reminderId: null
       }
     },
 
@@ -50,18 +63,48 @@
         this.$navigateBack()
       },
 
+      scheduleReminder: function (event) {
+        let dayBeforeEventStart = new Date(event.start_date)
+        dayBeforeEventStart = dayBeforeEventStart.setDate(dayBeforeEventStart.getDate()-1)
+
+        let hourBeforeEventStart = new Date(event.start_date)
+        hourBeforeEventStart = hourBeforeEventStart.setDate(hourBeforeEventStart.getDate()-1)
+
+        LocalNotifications.schedule([{
+          title: ''+event.name+' is coming up!',
+          body: 'Click here to get more info and directions.',
+          image: 'https://sfvm.la'+event.image,
+          thumbnail: true,
+          channel: 'SFVM Channel', // default: 'Channel'
+          at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
+        }]).then((scheduledID) => {
+          this.remindText = 'Reminder Set'
+          this.remindMe = true
+          this.reminderId = scheduledID
+        }, (error) => {
+          // COULDNT SET NOTIFICATION
+        })
+      },
+
       getDirections: function (address) {
         directions.navigate({
           to: {
             address: address
           }
         })
+      },
+
+      openUrl: function (address) {
+        utilsModule.openUrl(address)
       }
     },
 
     filters: {
       prettyDate: function (value) {
         return moment(value).format('MMM Do YYYY[\n]h:mm a')
+      },
+      eventEnds: function (value) {
+        return 'Event ends: ' + moment(value).format('MMM Do, h:mm a')
       },
     },
 
@@ -75,7 +118,9 @@ ActionBar {
   background-color: black;
   color: #ffffff;
 }
-HtmlView {
+Button {
+  background-color: black;
+  color: #ffffff;
 }
 
 .eventName {
