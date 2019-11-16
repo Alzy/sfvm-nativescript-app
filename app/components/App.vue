@@ -50,6 +50,7 @@
   const platformModule = require("tns-core-modules/platform");
   const utilsModule = require("tns-core-modules/utils/utils");
   const moment = require('moment');
+  const appSettings = require("tns-core-modules/application-settings");
 
   import EventPage from './EventPage'
 

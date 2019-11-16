@@ -46,6 +46,8 @@
   const Directions = require("nativescript-directions").Directions;
   const directions = new Directions();
   const utilsModule = require("tns-core-modules/utils/utils");
+  const appSettings = require("tns-core-modules/application-settings");
+  import EventPage from './EventPage'
 
 
   export default {
@@ -77,8 +79,8 @@
           image: 'https://sfvm.la'+event.image,
           thumbnail: true,
           channel: 'SFVM Channel', // default: 'Channel'
-          slug: event.slug,
-          at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
+          eventJSON: JSON.stringify(event),
+          at: new Date(new Date().getTime() + (1 * 1000)) // 10 seconds from now
         }]).then((scheduledID) => {
           this.remindText = 'Reminder Set'
           this.remindMe = true
@@ -87,9 +89,11 @@
           // COULDNT SET NOTIFICATION
         })
 
-        let thisEvent = JSON.stringify(this.event)
         LocalNotifications.addOnMessageReceivedCallback((notification) => {
-          console.log(notification)
+          console.log(eventJSON)
+          console.log(notification.eventJSON)
+          let eventJSON = JSON.parse(notification.eventJSON)
+          this.$navigateTo(EventPage, {props: {event: eventJSON}})
         })
       },
 
